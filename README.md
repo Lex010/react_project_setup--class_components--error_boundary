@@ -1,1 +1,1 @@
-this is readme.
+Запустить приложение локально = npm run dev
