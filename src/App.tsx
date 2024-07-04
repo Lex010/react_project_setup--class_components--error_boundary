@@ -9,7 +9,6 @@ interface AppState {
 }
 
 class App extends Component<Record<string, never>, AppState> {
-  // Изменяем {} на Record<string, never>
   constructor(props: Record<string, never>) {
     super(props);
     const savedSearchTerm = localStorage.getItem('searchTerm') || '';
