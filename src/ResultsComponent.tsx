@@ -23,6 +23,7 @@ interface ResultsComponentState {
   pokemonData?: PokemonData;
   loading: boolean;
   offset: number;
+  error: boolean;
 }
 
 class ResultsComponent extends Component<
@@ -36,6 +37,7 @@ class ResultsComponent extends Component<
       pokemonData: undefined,
       loading: false,
       offset: 0,
+      error: false,
     };
   }
 
@@ -50,15 +52,18 @@ class ResultsComponent extends Component<
   }
 
   fetchResults = async () => {
-    this.setState({ loading: true });
+    this.setState({ loading: true, error: false });
     const { searchTerm } = this.props;
     const { offset } = this.state;
     let url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=10`;
     if (searchTerm) {
       url = `https://pokeapi.co/api/v2/pokemon/${searchTerm}`;
     }
-    const response = await fetch(url);
-    if (response.ok) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
       if (searchTerm) {
         const data = await response.json();
         this.setState({ pokemonData: data, loading: false });
@@ -71,8 +76,9 @@ class ResultsComponent extends Component<
           pokemonData: undefined,
         });
       }
-    } else {
-      this.setState({ loading: false, pokemonData: undefined });
+    } catch (error) {
+      this.setState({ loading: false, error: true });
+      console.error('Fetch error:', error);
     }
   };
 
@@ -91,9 +97,12 @@ class ResultsComponent extends Component<
   };
 
   render() {
-    const { results, pokemonData, loading, offset } = this.state;
+    const { results, pokemonData, loading, offset, error } = this.state;
     if (loading) {
       return <div>Loading...</div>;
+    }
+    if (error) {
+      throw new Error('Failed to fetch data');
     }
     return (
       <div>

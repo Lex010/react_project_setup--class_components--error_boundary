@@ -23,12 +23,27 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   handleThrowError = () => {
-    throw new Error('Test Error');
+    setTimeout(() => {
+      throw new Error('Test Error');
+    }, 0);
+  };
+
+  handleClearLocalStorage = () => {
+    localStorage.clear();
+    this.setState({ hasError: false }); // Сброс состояния ошибки
+    window.location.reload(); // Перезагрузка страницы для восстановления нормального состояния
   };
 
   render() {
     if (this.state.hasError) {
-      return <div>Something went wrong. Please try again later.</div>;
+      return (
+        <div>
+          <div>Something went wrong. Please try again later.</div>
+          <button onClick={this.handleClearLocalStorage}>
+            Clear Local Storage
+          </button>
+        </div>
+      );
     }
     return (
       <div>
