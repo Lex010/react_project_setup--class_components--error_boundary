@@ -69,7 +69,7 @@ class ResultsComponent extends Component<
         this.setState({ pokemonData: data, loading: false });
       } else {
         const data = await response.json();
-        console.log(data.results.map((result: Result) => result.name));
+        // console.log(data.results.map((result: Result) => result.name));
         this.setState({
           results: data.results,
           loading: false,
