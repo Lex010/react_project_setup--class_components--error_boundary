@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import SearchComponent from './SearchComponent';
 import ResultsComponent from './ResultsComponent';
 import ErrorBoundary from './ErrorBoundary';
@@ -8,7 +8,7 @@ interface AppState {
   searchTerm: string;
 }
 
-class App extends Component<Record<string, never>, AppState> {
+class App extends React.Component<Record<string, never>, AppState> {
   constructor(props: Record<string, never>) {
     super(props);
     const savedSearchTerm = localStorage.getItem('searchTerm') || '';

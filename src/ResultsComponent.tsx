@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 
 interface Result {
   name: string;
@@ -26,7 +26,7 @@ interface ResultsComponentState {
   error: boolean;
 }
 
-class ResultsComponent extends Component<
+class ResultsComponent extends React.Component<
   ResultsComponentProps,
   ResultsComponentState
 > {

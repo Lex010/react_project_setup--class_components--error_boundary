@@ -1,4 +1,4 @@
-import React, { Component, ChangeEvent } from 'react';
+import * as React from 'react';
 
 interface SearchComponentProps {
   onSearch: (searchTerm: string) => void;
@@ -8,7 +8,7 @@ interface SearchComponentState {
   searchTerm: string;
 }
 
-class SearchComponent extends Component<
+class SearchComponent extends React.Component<
   SearchComponentProps,
   SearchComponentState
 > {
@@ -18,7 +18,7 @@ class SearchComponent extends Component<
     this.state = { searchTerm: savedSearchTerm };
   }
 
-  handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ searchTerm: e.target.value.trim() });
   };
 
