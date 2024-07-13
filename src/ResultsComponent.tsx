@@ -72,7 +72,12 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({ searchTerm }) => {
     return <div>Loading...</div>;
   }
   if (error) {
-    throw new Error('Failed to fetch data');
+    return (
+      <div>
+        We dont have such pokemon. LETTER CASE MATTERS. Clear the search bar and
+        press search to display the list
+      </div>
+    );
   }
   return (
     <div>
@@ -90,14 +95,15 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({ searchTerm }) => {
               <h3>{result.name}</h3>
             </div>
           ))}
-          <div>
-            <button onClick={handlePrev} disabled={page === 1}>
-              Previous
-            </button>
-            <button onClick={handleNext}>Next</button>
-          </div>
         </div>
       )}
+      <div>
+        <button onClick={handlePrev} disabled={page === 1}>
+          Previous
+        </button>
+        <span>Page {page}</span>
+        <button onClick={handleNext}>Next</button>
+      </div>
     </div>
   );
 };
