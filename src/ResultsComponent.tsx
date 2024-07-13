@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface Result {
   name: string;
@@ -22,17 +23,20 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({ searchTerm }) => {
   const [results, setResults] = useState<Result[]>([]);
   const [pokemonData, setPokemonData] = useState<PokemonData | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [offset, setOffset] = useState<number>(0);
   const [error, setError] = useState<boolean>(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const page = parseInt(params.get('page') || '1', 10);
 
   useEffect(() => {
     fetchResults();
-  }, [searchTerm, offset]);
+  }, [searchTerm, page]);
 
   const fetchResults = async () => {
     setLoading(true);
     setError(false);
-    let url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=10`;
+    let url = `https://pokeapi.co/api/v2/pokemon?offset=${(page - 1) * 10}&limit=10`;
     if (searchTerm) {
       url = `https://pokeapi.co/api/v2/pokemon/${searchTerm}`;
     }
@@ -57,11 +61,11 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({ searchTerm }) => {
   };
 
   const handlePrev = () => {
-    setOffset(Math.max(0, offset - 10));
+    navigate(`?page=${page - 1}`);
   };
 
   const handleNext = () => {
-    setOffset(offset + 10);
+    navigate(`?page=${page + 1}`);
   };
 
   if (loading) {
@@ -87,7 +91,7 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({ searchTerm }) => {
             </div>
           ))}
           <div>
-            <button onClick={handlePrev} disabled={offset === 0}>
+            <button onClick={handlePrev} disabled={page === 1}>
               Previous
             </button>
             <button onClick={handleNext}>Next</button>
