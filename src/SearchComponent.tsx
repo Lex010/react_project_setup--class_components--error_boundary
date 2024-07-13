@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
+import useLocalStorage from './useLocalStorage';
 
 interface SearchComponentProps {
   onSearch: (searchTerm: string) => void;
 }
 
 const SearchComponent: React.FC<SearchComponentProps> = ({ onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState(
-    localStorage.getItem('searchTerm') || '',
-  );
+  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value.trim());
   };
 
   const handleSearch = () => {
-    localStorage.setItem('searchTerm', searchTerm);
     onSearch(searchTerm);
   };
 

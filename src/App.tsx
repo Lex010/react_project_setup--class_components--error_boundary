@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import SearchComponent from './SearchComponent';
 import ResultsComponent from './ResultsComponent';
 import ErrorBoundary from './ErrorBoundary';
+import useLocalStorage from './useLocalStorage';
 import './style.css';
 
 const App: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState(
-    localStorage.getItem('searchTerm') || '',
-  );
+  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
