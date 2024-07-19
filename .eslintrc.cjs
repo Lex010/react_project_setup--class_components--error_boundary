@@ -6,11 +6,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
   ],
-  plugins: [
-    'react', 
-    '@typescript-eslint',
-    'react-compiler'
-  ],
+  plugins: ['react', '@typescript-eslint', 'react-compiler'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'error',
     'react/prop-types': 'off',
