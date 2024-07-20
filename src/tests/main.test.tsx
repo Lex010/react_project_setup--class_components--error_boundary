@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom/client';
 import { render } from '@testing-library/react';
 import { test } from 'vitest';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 
 test('renders App component using createRoot', async () => {
@@ -11,11 +12,17 @@ test('renders App component using createRoot', async () => {
   const reactRoot = ReactDOM.createRoot(root);
   reactRoot.render(
     <React.StrictMode>
-      <App />
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     </React.StrictMode>,
   );
 });
 
 test('renders App component using testing-library', async () => {
-  render(<App />);
+  render(
+    <MemoryRouter>
+      <App />
+    </MemoryRouter>,
+  );
 });
