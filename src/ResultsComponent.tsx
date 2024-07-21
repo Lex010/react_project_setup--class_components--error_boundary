@@ -109,3 +109,4 @@ const ResultsComponent: React.FC<ResultsComponentProps> = ({ searchTerm }) => {
 };
 
 export default ResultsComponent;
+export type { ResultsComponentProps };
