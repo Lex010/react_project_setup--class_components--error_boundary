@@ -1,22 +1,19 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import SearchComponent from './SearchComponent';
 import ResultsComponent from './ResultsComponent';
 import ErrorBoundary from './ErrorBoundary';
-import useLocalStorage from './useLocalStorage';
+import { RootState } from './store/store';
 import './style.css';
 
 const App: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-  };
+  const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
 
   return (
     <ErrorBoundary>
       <div className="app">
         <div className="search-section">
-          <SearchComponent onSearch={handleSearch} />
+          <SearchComponent />
         </div>
         <div className="results-section">
           <ResultsComponent searchTerm={searchTerm} />
