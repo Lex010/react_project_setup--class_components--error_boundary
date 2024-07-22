@@ -14,7 +14,6 @@ const ResultsComponent: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const page = parseInt(params.get('page') || '1', 10);
 
-  // Fetch queries
   const {
     data: pokemonData,
     error: pokemonError,
@@ -32,19 +31,15 @@ const ResultsComponent: React.FC = () => {
     { skip: !!searchTerm },
   );
 
-  // Determine if any query is loading
   const isLoading =
     pokemonLoading || listLoading || pokemonFetching || listFetching;
 
-  // Determine if there was an error
   const hasError = (pokemonError && searchTerm) || (listError && !searchTerm);
 
-  // Display loading indicator
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  // Display error message
   if (hasError) {
     return (
       <div>
@@ -54,7 +49,6 @@ const ResultsComponent: React.FC = () => {
     );
   }
 
-  // Display data
   return (
     <div>
       {searchTerm ? (
