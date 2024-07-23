@@ -1,18 +1,43 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   useGetPokemonByNameQuery,
   useGetPokemonListQuery,
 } from './services/pokemonApi';
 import { RootState } from './store/store';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { setPage } from './store/slices/pageSlice';
+import {
+  setItems,
+  addItem,
+  removeItem,
+  clearItems,
+} from './store/slices/selectedItemsSlice';
 
 const ResultsComponent: React.FC = () => {
+  const dispatch = useDispatch();
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
+  const currentPage = useSelector((state: RootState) => state.page.currentPage);
+  const selectedItems = useSelector(
+    (state: RootState) => state.selectedItems.selectedItems,
+  );
+
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const page = parseInt(params.get('page') || '1', 10);
+
+  useEffect(() => {
+    dispatch(setPage(page));
+  }, [dispatch, page]);
+
+  useEffect(() => {
+    const itemsFromUrl = params.get('selectedItems');
+    if (itemsFromUrl) {
+      const items = itemsFromUrl.split(',');
+      dispatch(setItems(items));
+    }
+  }, [location.search, dispatch]);
 
   const {
     data: pokemonData,
@@ -27,7 +52,7 @@ const ResultsComponent: React.FC = () => {
     isLoading: listLoading,
     isFetching: listFetching,
   } = useGetPokemonListQuery(
-    { offset: (page - 1) * 10, limit: 10 },
+    { offset: (currentPage - 1) * 10, limit: 10 },
     { skip: !!searchTerm },
   );
 
@@ -35,6 +60,25 @@ const ResultsComponent: React.FC = () => {
     pokemonLoading || listLoading || pokemonFetching || listFetching;
 
   const hasError = (pokemonError && searchTerm) || (listError && !searchTerm);
+
+  const handleSelectItem = (name: string) => {
+    if (selectedItems.includes(name)) {
+      dispatch(removeItem(name));
+    } else {
+      dispatch(addItem(name));
+    }
+    const newSelectedItems = selectedItems.includes(name)
+      ? selectedItems.filter((i) => i !== name)
+      : [...selectedItems, name];
+    params.set('selectedItems', newSelectedItems.join(','));
+    navigate(`${location.pathname}?${params.toString()}`);
+  };
+
+  const handleClearItems = () => {
+    dispatch(clearItems());
+    params.delete('selectedItems');
+    navigate(`${location.pathname}?${params.toString()}`);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -69,6 +113,9 @@ const ResultsComponent: React.FC = () => {
             (result: { name: string }, index: number) => (
               <div key={index}>
                 <h3>{result.name}</h3>
+                <button onClick={() => handleSelectItem(result.name)}>
+                  {selectedItems.includes(result.name) ? 'Unselect' : 'Select'}
+                </button>
               </div>
             ),
           )}
@@ -84,6 +131,12 @@ const ResultsComponent: React.FC = () => {
         <span>Page {page}</span>
         <button onClick={() => navigate(`?page=${page + 1}`)}>Next</button>
       </div>
+      {selectedItems.length > 0 && (
+        <div>
+          <button onClick={handleClearItems}>Unselect All</button>
+          <p>{selectedItems.length} items selected</p>
+        </div>
+      )}
     </div>
   );
 };
