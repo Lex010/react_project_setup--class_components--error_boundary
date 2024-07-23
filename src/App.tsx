@@ -8,7 +8,6 @@ import { toggleTheme } from './store/slices/themeSlice';
 import './style.css';
 
 const App: React.FC = () => {
-  const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
   const theme = useSelector((state: RootState) => state.theme.theme);
   const dispatch = useDispatch();
 
@@ -26,7 +25,7 @@ const App: React.FC = () => {
           <SearchComponent />
         </div>
         <div className="results-section">
-          <ResultsComponent searchTerm={searchTerm} />
+          <ResultsComponent />
         </div>
       </div>
     </ErrorBoundary>
