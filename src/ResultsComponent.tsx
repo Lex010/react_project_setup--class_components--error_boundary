@@ -13,6 +13,7 @@ import {
   removeItem,
   clearItems,
 } from './store/slices/selectedItemsSlice';
+import { downloadSelectedItems } from './utils/downloadUtils';
 
 const ResultsComponent: React.FC = () => {
   const dispatch = useDispatch();
@@ -45,7 +46,6 @@ const ResultsComponent: React.FC = () => {
     isLoading: pokemonLoading,
     isFetching: pokemonFetching,
   } = useGetPokemonByNameQuery(searchTerm, { skip: !searchTerm });
-
   const {
     data: pokemonList,
     error: listError,
@@ -58,7 +58,6 @@ const ResultsComponent: React.FC = () => {
 
   const isLoading =
     pokemonLoading || listLoading || pokemonFetching || listFetching;
-
   const hasError = (pokemonError && searchTerm) || (listError && !searchTerm);
 
   const handleSelectItem = (name: string) => {
@@ -80,6 +79,21 @@ const ResultsComponent: React.FC = () => {
     navigate(`${location.pathname}?${params.toString()}`);
   };
 
+  const handleDownload = () => {
+    const data = selectedItems.map((item) => ({
+      name: item,
+      description: `Description of ${item}`,
+      detailsUrl: `https://pokeapi.co/api/v2/${item}`,
+    }));
+    downloadSelectedItems(data);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    params.set('page', newPage.toString());
+    params.set('selectedItems', selectedItems.join(','));
+    navigate(`${location.pathname}?${params.toString()}`);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -88,7 +102,7 @@ const ResultsComponent: React.FC = () => {
     return (
       <div>
         We dont have such pokemon. LETTER CASE MATTERS. Clear the search bar and
-        press search to display the list
+        press search to display the list.
       </div>
     );
   }
@@ -123,17 +137,18 @@ const ResultsComponent: React.FC = () => {
       )}
       <div>
         <button
-          onClick={() => navigate(`?page=${page - 1}`)}
+          onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
         >
           Previous
         </button>
         <span>Page {page}</span>
-        <button onClick={() => navigate(`?page=${page + 1}`)}>Next</button>
+        <button onClick={() => handlePageChange(page + 1)}>Next</button>
       </div>
       {selectedItems.length > 0 && (
         <div>
           <button onClick={handleClearItems}>Unselect All</button>
+          <button onClick={handleDownload}>Download</button>
           <p>{selectedItems.length} items selected</p>
         </div>
       )}
