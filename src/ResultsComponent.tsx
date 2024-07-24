@@ -146,10 +146,12 @@ const ResultsComponent: React.FC = () => {
         <button onClick={() => handlePageChange(page + 1)}>Next</button>
       </div>
       {selectedItems.length > 0 && (
-        <div>
-          <button onClick={handleClearItems}>Unselect All</button>
-          <button onClick={handleDownload}>Download</button>
+        <div className="unselectAll-download-container">
+          <button onClick={handleClearItems} className="unselect-all-btn">
+            Unselect All
+          </button>
           <p>{selectedItems.length} items selected</p>
+          <button onClick={handleDownload}>Download</button>
         </div>
       )}
     </div>
