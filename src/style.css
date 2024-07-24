@@ -77,6 +77,11 @@
   overflow-y: auto;
 }
 
+.page-change-btn-container {
+  margin: 10px 0 0 40px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
 .unselectAll-download-container {
   margin-top: 10px;
   padding: 3px;

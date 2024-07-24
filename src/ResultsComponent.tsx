@@ -135,7 +135,7 @@ const ResultsComponent: React.FC = () => {
           )}
         </div>
       )}
-      <div>
+      <div className="page-change-btn-container">
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
