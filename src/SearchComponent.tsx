@@ -1,45 +1,27 @@
-import * as React from 'react';
+import React from 'react';
+import useLocalStorage from './useLocalStorage';
 
 interface SearchComponentProps {
   onSearch: (searchTerm: string) => void;
 }
 
-interface SearchComponentState {
-  searchTerm: string;
-}
+const SearchComponent: React.FC<SearchComponentProps> = ({ onSearch }) => {
+  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
 
-class SearchComponent extends React.Component<
-  SearchComponentProps,
-  SearchComponentState
-> {
-  constructor(props: SearchComponentProps) {
-    super(props);
-    const savedSearchTerm = localStorage.getItem('searchTerm') || '';
-    this.state = { searchTerm: savedSearchTerm };
-  }
-
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: e.target.value.trim() });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value.trim());
   };
 
-  handleSearch = () => {
-    const { searchTerm } = this.state;
-    localStorage.setItem('searchTerm', searchTerm);
-    this.props.onSearch(searchTerm);
+  const handleSearch = () => {
+    onSearch(searchTerm);
   };
 
-  render() {
-    return (
-      <div>
-        <input
-          type="text"
-          value={this.state.searchTerm}
-          onChange={this.handleChange}
-        />
-        <button onClick={this.handleSearch}>Search</button>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <input type="text" value={searchTerm} onChange={handleChange} />
+      <button onClick={handleSearch}>Search</button>
+    </div>
+  );
+};
 
 export default SearchComponent;

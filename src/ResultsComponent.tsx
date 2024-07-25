@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface Result {
   name: string;
@@ -18,44 +19,24 @@ interface ResultsComponentProps {
   searchTerm: string;
 }
 
-interface ResultsComponentState {
-  results: Result[];
-  pokemonData?: PokemonData;
-  loading: boolean;
-  offset: number;
-  error: boolean;
-}
+const ResultsComponent: React.FC<ResultsComponentProps> = ({ searchTerm }) => {
+  const [results, setResults] = useState<Result[]>([]);
+  const [pokemonData, setPokemonData] = useState<PokemonData | undefined>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const page = parseInt(params.get('page') || '1', 10);
 
-class ResultsComponent extends React.Component<
-  ResultsComponentProps,
-  ResultsComponentState
-> {
-  constructor(props: ResultsComponentProps) {
-    super(props);
-    this.state = {
-      results: [],
-      pokemonData: undefined,
-      loading: false,
-      offset: 0,
-      error: false,
-    };
-  }
+  useEffect(() => {
+    fetchResults();
+  }, [searchTerm, page]);
 
-  componentDidMount() {
-    this.fetchResults();
-  }
-
-  componentDidUpdate(prevProps: ResultsComponentProps) {
-    if (prevProps.searchTerm !== this.props.searchTerm) {
-      this.fetchResults();
-    }
-  }
-
-  fetchResults = async () => {
-    this.setState({ loading: true, error: false });
-    const { searchTerm } = this.props;
-    const { offset } = this.state;
-    let url = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=10`;
+  const fetchResults = async () => {
+    setLoading(true);
+    setError(false);
+    let url = `https://pokeapi.co/api/v2/pokemon?offset=${(page - 1) * 10}&limit=10`;
     if (searchTerm) {
       url = `https://pokeapi.co/api/v2/pokemon/${searchTerm}`;
     }
@@ -64,76 +45,68 @@ class ResultsComponent extends React.Component<
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
+      const data = await response.json();
       if (searchTerm) {
-        const data = await response.json();
-        this.setState({ pokemonData: data, loading: false });
+        setPokemonData(data);
       } else {
-        const data = await response.json();
-        // console.log(data.results.map((result: Result) => result.name));
-        this.setState({
-          results: data.results,
-          loading: false,
-          pokemonData: undefined,
-        });
+        setResults(data.results);
+        setPokemonData(undefined);
       }
+      setLoading(false);
     } catch (error) {
-      this.setState({ loading: false, error: true });
+      setLoading(false);
+      setError(true);
       console.error('Fetch error:', error);
     }
   };
 
-  handlePrev = () => {
-    this.setState(
-      (prevState) => ({ offset: Math.max(0, prevState.offset - 10) }),
-      this.fetchResults,
-    );
+  const handlePrev = () => {
+    navigate(`?page=${page - 1}`);
   };
 
-  handleNext = () => {
-    this.setState(
-      (prevState) => ({ offset: prevState.offset + 10 }),
-      this.fetchResults,
-    );
+  const handleNext = () => {
+    navigate(`?page=${page + 1}`);
   };
 
-  render() {
-    const { results, pokemonData, loading, offset, error } = this.state;
-    if (loading) {
-      return <div>Loading...</div>;
-    }
-    if (error) {
-      throw new Error('Failed to fetch data');
-    }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
     return (
       <div>
-        {pokemonData ? (
-          <div>
-            <h3>{pokemonData.name}</h3>
-            <img
-              src={pokemonData.sprites.front_default}
-              alt={pokemonData.name}
-            />
-            <p>Height: {pokemonData.height}</p>
-            <p>Base experience: {pokemonData.base_experience}</p>
-          </div>
-        ) : (
-          <div>
-            {results.map((result, index) => (
-              <div key={index}>
-                <h3>{result.name}</h3>
-              </div>
-            ))}
-            <div>
-              <button onClick={this.handlePrev} disabled={offset === 0}>
-                Previous
-              </button>
-              <button onClick={this.handleNext}>Next</button>
-            </div>
-          </div>
-        )}
+        We dont have such pokemon. LETTER CASE MATTERS. Clear the search bar and
+        press search to display the list
       </div>
     );
   }
-}
+  return (
+    <div>
+      {pokemonData ? (
+        <div>
+          <h3>{pokemonData.name}</h3>
+          <img src={pokemonData.sprites.front_default} alt={pokemonData.name} />
+          <p>Height: {pokemonData.height}</p>
+          <p>Base experience: {pokemonData.base_experience}</p>
+        </div>
+      ) : (
+        <div>
+          {results.map((result, index) => (
+            <div key={index}>
+              <h3>{result.name}</h3>
+            </div>
+          ))}
+        </div>
+      )}
+      <div>
+        <button onClick={handlePrev} disabled={page === 1}>
+          Previous
+        </button>
+        <span>Page {page}</span>
+        <button onClick={handleNext}>Next</button>
+      </div>
+    </div>
+  );
+};
 
 export default ResultsComponent;
+export type { ResultsComponentProps };
