@@ -51,3 +51,5 @@ test('renders ResultsComponent and interacts with it', async () => {
     expect(screen.getByText(/Page 1/i)).toBeInTheDocument();
   }
 });
+const a = React;
+export default a;

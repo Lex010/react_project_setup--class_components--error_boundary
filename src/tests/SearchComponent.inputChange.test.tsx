@@ -15,3 +15,5 @@ test('updates input value on change', () => {
   fireEvent.change(input, { target: { value: 'new search term' } });
   expect(input).toHaveValue('new search term');
 });
+const a = React;
+export default a;
